@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1073384979642",
+    "firebase_url": "https://lab2-software-engineering-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "lab2-software-engineering",
+    "storage_bucket": "lab2-software-engineering.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073384979642:android:8091c7c4e4e020fd915683",
+        "android_client_info": {
+          "package_name": "se.jwan.lab2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLJav-nZT21hnovYWZiGqmmam_PDeBJGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
