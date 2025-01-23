@@ -5,16 +5,16 @@ from house import House
 
 
 class Server:
-    def __init__(self, host=socket.gethostbyname(socket.gethostname()), port=12346, header=64, format="utf-8"):
-        self.host = host
-        self.port = port
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clients = []
-        self.header = header
-        self.format = format
-        self.house = House()
+    def __init__(self, host=socket.gethostbyname(socket.gethostname()), port=12346, header=64, format="utf-8") -> None:
+        self.host: str = host
+        self.port: int = port
+        self.server: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clients: list = []
+        self.header: int = header
+        self.format: str = format
+        self.house: House = House()
 
-    def start(self):
+    def start(self) -> None:
         self.server.bind((self.host, self.port))
         self.server.listen()
         print(f"Server started at {self.host}:{self.port}")
@@ -24,7 +24,7 @@ class Server:
             self.clients.append(client)
             threading.Thread(target=self.handle_client, args=(client, addr)).start()
 
-    def handle_client(self, client, addr):
+    def handle_client(self, client, addr) -> None:
         client.send("Hi from server!\n".encode(self.format))
         connected = True
         while connected:
@@ -46,7 +46,7 @@ class Server:
                 connected = False
         client.close()
 
-    def process_command(self, command):
+    def process_command(self, command) -> str:
         parts = command.split()
         if len(parts) < 2:
             if command.lower() == "status":

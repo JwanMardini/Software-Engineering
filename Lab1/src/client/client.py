@@ -3,15 +3,15 @@ import threading
 
 
 class Client:
-    def __init__(self, host=socket.gethostbyname("172.27.48.1"), port=12346, header=64, format="utf-8"):
-        self.host = host
-        self.port = port
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.header = header
-        self.format = format
-        self.running = True
+    def __init__(self, host=socket.gethostbyname(socket.gethostname()), port=12346, header=64, format="utf-8") -> None:
+        self.host: str = host
+        self.port: int = port
+        self.client: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.header: int = header
+        self.format: str = format
+        self.running: bool = True
 
-    def start(self):
+    def start(self) -> None:
         try:
             self.client.connect((self.host, self.port))
             print(f"Connected to {self.host}:{self.port}")
@@ -42,7 +42,7 @@ class Client:
             self.client.close()
             print("Disconnected from server.")
 
-    def send(self, msg):
+    def send(self, msg) -> None:
         try:
             message = msg.encode(self.format)
             msg_length = len(message)
@@ -53,7 +53,7 @@ class Client:
         except BrokenPipeError:
             print("Connection to the server is broken.")
 
-    def receive_messages(self):
+    def receive_messages(self) -> None:
         try:
             while self.running:
                 message = self.client.recv(2048).decode(self.format)
