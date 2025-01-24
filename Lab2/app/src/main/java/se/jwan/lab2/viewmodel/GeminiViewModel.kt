@@ -1,6 +1,5 @@
 package se.jwan.lab2.viewmodel
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 import se.jwan.lab2.BuildConfig
 import se.jwan.lab2.UiState
 
-class BakingViewModel : ViewModel() {
+class  GeminiViewModel : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> =
         MutableStateFlow(UiState.Initial)
     val uiState: StateFlow<UiState> =
@@ -25,7 +24,6 @@ class BakingViewModel : ViewModel() {
     )
 
     fun sendPrompt(
-        bitmap: Bitmap,
         prompt: String
     ) {
         _uiState.value = UiState.Loading
@@ -34,7 +32,6 @@ class BakingViewModel : ViewModel() {
             try {
                 val response = generativeModel.generateContent(
                     content {
-                        image(bitmap)
                         text(prompt)
                     }
                 )

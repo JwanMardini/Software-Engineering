@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import se.jwan.lab2.data.repository.FirebaseRepository
-import se.jwan.lab2.ui.screens.BakingScreen
+import se.jwan.lab2.ui.screens.GeminiScreen
 import se.jwan.lab2.ui.screens.ControlScreen
 import se.jwan.lab2.viewmodel.MainViewModel
 
@@ -25,7 +25,7 @@ fun MyAppNavHost(
         }
 
         composable("gemini") {
-            BakingScreen()
+            GeminiScreen()
         }
     }
 
