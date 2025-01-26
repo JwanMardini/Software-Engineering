@@ -1,6 +1,11 @@
 package se.jwan.lab2.ui.screens
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Icon
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,8 +22,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,7 +39,8 @@ import se.jwan.lab2.R
 import se.jwan.lab2.data.model.DeviceState
 import se.jwan.lab2.data.repository.FirebaseRepository
 import se.jwan.lab2.viewmodel.MainViewModel
-
+import java.util.Locale
+import java.util.regex.Pattern
 
 
 @Composable
@@ -43,6 +52,20 @@ fun ControlScreen(viewModel: MainViewModel, onNavigateToGemini: () -> Unit) {
     val unlockedDoor = ImageVector.vectorResource(R.drawable.door_exit_door_svgrepo_com)
     val openWindow = ImageVector.vectorResource(R.drawable.window_svgrepo_com)
     val closedWindow = ImageVector.vectorResource(R.drawable.window_svgrepo_com__1_)
+
+    val speechText = remember { mutableStateOf("Your speech will appear here.") }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            val data = it.data
+            val result = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            speechText.value = result?.get(0) ?: "No speech detected."
+
+            processSpeechCommand(speechText.value, viewModel, speechText)
+        } else {
+            speechText.value = "[Speech recognition failed.]"
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -87,6 +110,20 @@ fun ControlScreen(viewModel: MainViewModel, onNavigateToGemini: () -> Unit) {
             )
 
         }
+
+        Button(onClick = {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Go on then, say something.")
+            launcher.launch(intent)
+        }) {
+            Text(
+                text = "Start speech recognition",
+            )
+        }
+        
+        Text(text = speechText.value)
     }
 }
 
@@ -134,7 +171,32 @@ fun SwitchWithLabel(
     }
 }
 
-@Preview
+
+
+fun processSpeechCommand(speechText: String, viewModel: MainViewModel, speechTextState: MutableState<String>) {
+    // Define regular expressions for commands
+    val lightOnPattern = Pattern.compile("\\b(turn on the light|light on|switch on the light)\\b", Pattern.CASE_INSENSITIVE)
+    val lightOffPattern = Pattern.compile("\\b(turn off the light|light off|switch off the light)\\b", Pattern.CASE_INSENSITIVE)
+    val doorUnlockPattern = Pattern.compile("\\b(unlock the door|open the door)\\b", Pattern.CASE_INSENSITIVE)
+    val doorLockPattern = Pattern.compile("\\b(lock the door|close the door)\\b", Pattern.CASE_INSENSITIVE)
+    val windowOpenPattern = Pattern.compile("\\b(open the window|window open)\\b", Pattern.CASE_INSENSITIVE)
+    val windowClosePattern = Pattern.compile("\\b(close the window|window close)\\b", Pattern.CASE_INSENSITIVE)
+
+    // Match and process commands
+    when {
+        lightOnPattern.matcher(speechText).find() -> viewModel.toggleSwitch("light", "on")
+        lightOffPattern.matcher(speechText).find() -> viewModel.toggleSwitch("light", "off")
+        doorUnlockPattern.matcher(speechText).find() -> viewModel.toggleSwitch("door", "unlocked")
+        doorLockPattern.matcher(speechText).find() -> viewModel.toggleSwitch("door", "locked")
+        windowOpenPattern.matcher(speechText).find() -> viewModel.toggleSwitch("window", "open")
+        windowClosePattern.matcher(speechText).find() -> viewModel.toggleSwitch("window", "closed")
+        else -> speechTextState.value = "I'm sorry, I didn't understand that command."
+    }
+}
+
+
+
+/*@Preview
 @Composable
 fun SwitchWithLabelPreview() {
     val randomVec = ImageVector.vectorResource(R.drawable.door_exit_door_svgrepo_com)
@@ -145,4 +207,4 @@ fun SwitchWithLabelPreview() {
         isChecked = true,
         onToggle = {}
     )
-}
+}*/
