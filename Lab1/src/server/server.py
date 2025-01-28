@@ -22,6 +22,7 @@ class Server:
             client, addr = self.server.accept()
             print(f"Client with address {addr} connected.")
             self.clients.append(client)
+            print(f"Number of clients: {len(self.clients)}")
             threading.Thread(target=self.handle_client, args=(client, addr)).start()
 
     def handle_client(self, client, addr) -> None:
@@ -38,12 +39,16 @@ class Server:
                     elif msg == "exit":
                         print(f"Client {addr} disconnected.")
                         connected = False
+                        self.clients.remove(client)
+                        print(f"Number of clients: {len(self.clients)}")
                     else:
                         response = self.process_command(msg)
                         client.send(response.encode(self.format))
             except ConnectionResetError:
                 print(f"Client {addr} forcibly closed the connection.")
                 connected = False
+                self.clients.remove(client)
+                print(f"Number of clients: {len(self.clients)}")
         client.close()
 
     def process_command(self, command) -> str:

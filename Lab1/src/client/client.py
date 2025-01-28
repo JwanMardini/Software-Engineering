@@ -29,13 +29,12 @@ class Client:
                 if command not in valid_commands:
                     print("Invalid command! Please try again.")
                     continue
-                self.send(command)
-
                 if command == "help":
                     print("Commands: light on, light off, door lock, door unlock, window open, window close, status, exit")
-
+                    continue    
                 if command == "exit":
                     self.running = False
+                self.send(command)
         except Exception as e:
             print(f"Error: {e}")
         finally:
