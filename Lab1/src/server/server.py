@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 from house import House
+from house_gui import HouseGUI
 
 
 class Server:
@@ -14,7 +15,17 @@ class Server:
         self.format: str = format
         self.house: House = House()
 
+        # Initialize GUI
+        self.house_gui = HouseGUI(self.house)
+
     def start(self) -> None:
+        """Start the server in a separate thread."""
+        threading.Thread(target=self._run_server, daemon=True).start()
+        # Run the GUI in the main thread
+        self.house_gui.run()
+
+    def _run_server(self) -> None:
+        """Internal method to run the server."""
         self.server.bind((self.host, self.port))
         self.server.listen()
         print(f"Server started at {self.host}:{self.port}")
@@ -44,6 +55,8 @@ class Server:
                     else:
                         response = self.process_command(msg)
                         client.send(response.encode(self.format))
+                        # Update GUI after processing command
+                        self.house_gui.update_gui()
             except ConnectionResetError:
                 print(f"Client {addr} forcibly closed the connection.")
                 connected = False
@@ -74,5 +87,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    server = Server()
+    server = Server(host="194.47.44.239")
     server.start()
