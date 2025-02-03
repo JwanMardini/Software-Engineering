@@ -157,7 +157,8 @@ fun SwitchWithLabel(
         Icon(
             imageVector = imVector,
             contentDescription = null,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(40.dp),
+            tint = androidx.compose.ui.graphics.Color.Unspecified
         )
 
         Switch(
